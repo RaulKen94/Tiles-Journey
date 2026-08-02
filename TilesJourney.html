@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="it" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tiles Journey</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Remixicon Font CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.9.1/fonts/remixicon.css" rel="stylesheet">
+    
+    <style>
+        html, body {
+            height: 100%;
+            height: 100dvh;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050b14;
+            color: #f1f5f9;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(14, 116, 144, 0.15) 0%, transparent 75%),
+                linear-gradient(to bottom, #030712, #070e1b);
+        }
+
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        .font-rajdhani { font-family: 'Rajdhani', sans-serif; }
+
+        /* Metallic Teal-Cyan Card styling */
+        .metallic-cyan-tile {
+            background: linear-gradient(135deg, 
+                rgba(8, 51, 68, 0.95) 0%, 
+                rgba(14, 116, 144, 0.85) 45%, 
+                rgba(6, 182, 212, 0.75) 50%, 
+                rgba(14, 116, 144, 0.85) 55%, 
+                rgba(4, 47, 63, 0.95) 100%);
+            background-size: 200% 200%;
+            border: 1.5px solid rgba(34, 211, 238, 0.5);
+            box-shadow: 
+                inset 0 1px 2px rgba(255, 255, 255, 0.25),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.5),
+                0 4px 12px -2px rgba(6, 182, 212, 0.25);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .metallic-cyan-tile::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.25),
+                transparent
+            );
+            transform: skewX(-25deg);
+            transition: left 0.6s ease;
+        }
+
+        .metallic-cyan-tile:active, .metallic-cyan-tile:hover {
+            transform: scale(0.99);
+            border-color: rgba(165, 243, 252, 0.9);
+            box-shadow: 
+                inset 0 1px 3px rgba(255, 255, 255, 0.4),
+                0 6px 16px -2px rgba(6, 182, 212, 0.5);
+            background-position: 100% 100%;
+        }
+
+        .metallic-cyan-tile:hover::before {
+            left: 150%;
+        }
+
+        /* Glassmorphism panel */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.15);
+            box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* Heart pulsing animation */
+        @keyframes heartPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.12); }
+        }
+        .animate-heart {
+            animation: heartPulse 1.8s infinite ease-in-out;
+        }
+
+        /* Custom XP bar gradient */
+        .xp-bar-fill {
+            background: linear-gradient(90deg, #0284c7, #06b6d4, #22d3ee, #38bdf8);
+            box-shadow: 0 0 10px rgba(34, 211, 238, 0.6);
+            transition: width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Custom Scrollbar for Hub */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(6, 182, 212, 0.4);
+            border-radius: 2px;
+        }
+
+        /* Unique Style for Icons */
+        .app-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            line-height: 1;
+            filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.4));
+            transition: transform 0.2s ease, filter 0.2s ease;
+        }
+
+        .app-icon-fire {
+            color: #f97316;
+            filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.8));
+        }
+
+        .app-icon-utensils {
+            color: #cbd5e1;
+            filter: drop-shadow(0 0 6px rgba(203, 213, 225, 0.7));
+        }
+
+        .app-icon-fuchsia {
+            color: #e879f9;
+            filter: drop-shadow(0 0 6px rgba(232, 121, 249, 0.8));
+        }
+
+        .app-icon-gold {
+            color: #facc15;
+            filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.8));
+        }
+    </style>
+</head>
+<body class="flex flex-col h-full text-slate-100 selection:bg-cyan-500 selection:text-slate-950">
+
+    <!-- MAIN TOP BAR / XP & STATUS HUD -->
+    <header class="shrink-0 glass-panel border-b border-cyan-500/20 px-3 py-2 z-40">
+        <div class="max-w-5xl mx-auto flex items-center justify-between gap-2">
+            
+            <!-- Logo & Title -->
+            <div class="flex items-center gap-2">
+                <div>
+                    <h1 class="font-orbitron font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-teal-200 to-white text-base sm:text-lg leading-none">
+                        TILES JOURNEY
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Level & XP Container -->
+            <div class="flex-1 max-w-xs bg-slate-900/90 px-2.5 py-1.5 rounded-lg border border-cyan-500/20 shadow-inner">
+                <div class="flex items-center justify-between text-[11px] font-rajdhani font-bold mb-0.5 tracking-wider">
+                    <span class="text-cyan-300 flex items-center gap-1">
+                        LV. <span id="playerLevelDisplay" class="text-white text-xs font-extrabold font-orbitron ml-0.5">1</span>
+                    </span>
+                    <span class="text-slate-300 text-[10px]">
+                        EXP: <span id="currentXpText" class="text-cyan-300 font-semibold">0</span>/<span id="reqXpText" class="text-slate-400">10</span>
+                    </span>
+                </div>
+                <!-- XP Progress Bar -->
+                <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                    <div id="xpBarFill" class="xp-bar-fill h-full rounded-full w-0"></div>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- MAIN APP CONTAINER -->
+    <main class="flex-1 max-w-5xl w-full mx-auto p-2 sm:p-4 flex flex-col min-h-0 overflow-hidden">
+
+        <!-- VIEW 1: HUB CENTRALE -->
+        <section id="hubView" class="flex-1 flex flex-col space-y-4 overflow-y-auto pr-1">
+            
+            <!-- Hub Banner Header -->
+            <div class="glass-panel p-4 sm:p-6 rounded-xl relative overflow-hidden border border-cyan-500/30 shrink-0">
+                <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                
+                <div class="flex items-start justify-between">
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 text-[10px] font-semibold uppercase tracking-wider mb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Base Operativa
+                        </div>
+                        <h2 class="font-orbitron font-extrabold text-xl sm:text-3xl text-white mb-1 tracking-wide">
+                            HUB CENTRALE
+                        </h2>
+                        <p class="text-slate-300 text-xs sm:text-sm leading-snug">
+                            Monitora le risorse accumulate, crea oggetti avanzati e avvia nuove spedizioni.
+                        </p>
+                    </div>
+
+                    <!-- Settings Gear Icon Button -->
+                    <button onclick="openSaveModal()" title="Salva / Carica Progressi" class="p-2 rounded-xl bg-slate-900/90 border border-cyan-500/40 text-cyan-300 hover:text-white hover:bg-cyan-950 transition flex items-center justify-center shrink-0 ml-2 shadow-md active:scale-95">
+                        <i class="ri-settings-4-fill text-xl sm:text-2xl"></i>
+                    </button>
+                </div>
+
+                <div class="mt-4 flex flex-wrap gap-3 items-center">
+                    <button onclick="startExpedition()" class="flex-1 sm:flex-initial px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 via-teal-400 to-cyan-600 text-slate-950 font-orbitron font-black text-sm sm:text-base shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(6,182,212,0.7)] active:scale-95 transition flex items-center justify-center gap-2">
+                        <span>🚀</span> NUOVA SPEDIZIONE
+                    </button>
+
+                    <div class="flex items-center gap-3 bg-slate-900/90 px-3 py-2 rounded-lg border border-slate-800 text-xs font-semibold">
+                        <div>
+                            <span class="text-slate-400 block text-[9px] uppercase font-bold">Round</span>
+                            <span id="totalTurnsDisplay" class="text-cyan-300 font-orbitron font-bold text-sm">0</span>
+                        </div>
+                        <div class="w-px h-6 bg-slate-800"></div>
+                        <div>
+                            <span class="text-slate-400 block text-[9px] uppercase font-bold">Partite</span>
+                            <span id="totalRunsDisplay" class="text-emerald-400 font-orbitron font-bold text-sm">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resource Inventory Section -->
+            <div class="shrink-0 flex flex-col space-y-3">
+                
+                <!-- Base Resources -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-orbitron font-bold text-xs sm:text-sm text-cyan-200 flex items-center gap-1.5 uppercase tracking-wider">
+                            <span>📦</span> Inventario Risorse Base
+                        </h3>
+                        <span class="text-[10px] text-slate-400">10 Categorie</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="hubResourceGrid">
+                        <!-- Dynamic Javascript injection -->
+                    </div>
+                </div>
+
+                <!-- Advanced Resources -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-orbitron font-bold text-xs sm:text-sm text-amber-300 flex items-center gap-1.5 uppercase tracking-wider">
+                            <span>✨</span> Risorse Avanzate
+                        </h3>
+                        <span class="text-[10px] text-amber-400/80">Ottenibili solo tramite Ricette</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="hubAdvancedResourceGrid">
+                        <!-- Dynamic Javascript injection -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recipes Section -->
+            <div class="shrink-0 flex flex-col pt-2 border-t border-slate-800/80">
+                <div class="flex items-center justify-between mb-2 cursor-pointer select-none" onclick="toggleRecipesSection()">
+                    <div class="flex items-center gap-1.5">
+                        <h3 class="font-orbitron font-bold text-sm sm:text-base text-cyan-300 flex items-center gap-1.5">
+                            <span>📚</span> RICETTE
+                        </h3>
+                        <span class="text-[10px] text-slate-400">Banco da Lavoro</span>
+                    </div>
+                    <button id="recipesToggleBtn" class="text-cyan-300 text-xs px-2 py-0.5 rounded-lg bg-slate-900 border border-cyan-500/30 hover:bg-slate-800 transition flex items-center gap-1">
+                        <span id="recipesToggleIcon" class="text-[10px]">▼</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="hubRecipesGrid">
+                    <!-- Dynamic Recipes Javascript Injection -->
+                </div>
+            </div>
+        </section>
+
+
+        <!-- VIEW 2: GAME EXPEDITION RUN (MOBILE OPTIMIZED ZERO-SCROLL) -->
+        <section id="expeditionView" class="hidden flex-1 flex flex-col justify-between gap-2 h-full min-h-0 overflow-hidden">
+            
+            <!-- Expedition Header Status Bar -->
+            <div class="glass-panel px-3 py-2 rounded-xl flex items-center justify-between gap-2 border border-cyan-500/30 shrink-0">
+                
+                <!-- Round -->
+                <div class="flex items-center gap-2">
+                    <div class="bg-cyan-950/90 border border-cyan-500/40 px-2 py-1 rounded-lg flex items-center gap-1.5">
+                        <span class="text-[9px] text-cyan-400/90 font-bold uppercase tracking-wider font-rajdhani">ROUND</span>
+                        <span id="currentRoundDisplay" class="font-orbitron font-extrabold text-sm text-cyan-300">1</span>
+                    </div>
+                </div>
+
+                <!-- Health / Hearts Display -->
+                <div class="flex items-center gap-1.5 bg-slate-900/90 border border-slate-800 px-2.5 py-1 rounded-lg">
+                    <span class="text-[10px] text-slate-400 font-bold uppercase mr-0.5 hidden sm:inline">Salute:</span>
+                    <div id="heartsContainer" class="flex items-center gap-1 text-base">
+                        <span class="animate-heart text-red-500">❤️</span>
+                        <span class="animate-heart text-red-500">❤️</span>
+                        <span class="animate-heart text-red-500">❤️</span>
+                    </div>
+                </div>
+
+                <!-- Emergency Retreat Button -->
+                <button onclick="forfeitRun()" class="text-[11px] text-slate-400 hover:text-red-400 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 transition flex items-center gap-1">
+                    <span>🏳️</span> <span class="hidden sm:inline">Hub</span>
+                </button>
+            </div>
+
+            <!-- 3 METALLIC TEAL-CYAN HORIZONTAL TILES (COMPACT FIT) -->
+            <div id="choicesContainer" class="flex-1 flex flex-col justify-between gap-2 min-h-0 py-1">
+                <!-- Dynamically Generated via JS -->
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- SAVE / LOAD MODAL -->
+    <div id="saveModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel max-w-md w-full p-4 sm:p-6 rounded-2xl border border-cyan-500/40 shadow-2xl flex flex-col space-y-4">
+            
+            <div class="flex items-center justify-between border-b border-cyan-500/20 pb-2">
+                <h3 class="font-orbitron font-extrabold text-base sm:text-lg text-cyan-300 flex items-center gap-2">
+                    <span>⚙️</span> SALVATAGGIO & CARICAMENTO
+                </h3>
+                <button onclick="closeSaveModal()" class="text-slate-400 hover:text-white font-bold text-lg px-2">✕</button>
+            </div>
+
+            <!-- Generate Save Code Section -->
+            <div class="space-y-2">
+                <label class="block text-xs font-rajdhani font-bold uppercase tracking-wider text-slate-300">
+                    1. Salva Progressi (Genera Codice)
+                </label>
+                <button onclick="generateSaveCode()" class="w-full py-2 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-teal-400 to-cyan-600 text-slate-950 font-orbitron font-black text-xs sm:text-sm hover:brightness-110 active:scale-95 transition shadow-md">
+                    📂 GENERA CODICE DI SALVATAGGIO
+                </button>
+                
+                <div id="generatedCodeContainer" class="hidden space-y-1.5 mt-2">
+                    <div class="relative">
+                        <textarea id="saveCodeOutput" readonly class="w-full h-20 bg-slate-950 border border-cyan-500/40 rounded-lg p-2 font-mono text-xs text-cyan-300 resize-none select-all focus:outline-none"></textarea>
+                    </div>
+                    <button onclick="copySaveCode()" class="w-full py-1.5 rounded-lg bg-slate-900 border border-cyan-500/30 text-cyan-300 text-xs font-semibold hover:bg-slate-800 transition flex items-center justify-center gap-1.5">
+                        <span>📋</span> Copia Codice
+                    </button>
+                </div>
+            </div>
+
+            <div class="w-full h-px bg-slate-800"></div>
+
+            <!-- Load Save Code Section -->
+            <div class="space-y-2">
+                <label class="block text-xs font-rajdhani font-bold uppercase tracking-wider text-slate-300">
+                    2. Carica Progressi (Incolla Codice)
+                </label>
+                <textarea id="loadCodeInput" placeholder="Incolla qui il tuo codice alfanumerico..." class="w-full h-20 bg-slate-950 border border-slate-800 rounded-lg p-2 font-mono text-xs text-white resize-none focus:border-cyan-500/60 focus:outline-none"></textarea>
+                <button onclick="loadSaveCode()" class="w-full py-2 px-4 rounded-xl bg-slate-800 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-950 font-orbitron font-bold text-xs sm:text-sm active:scale-95 transition">
+                    📥 CARICA PROGRESSI
+                </button>
+                <p id="saveModalStatus" class="text-xs text-center font-semibold h-4"></p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // 1. GAME RESOURCES DATA STRUCTURE
+        const BASE_RESOURCE_KEYS = [
+            { id: 'crediti', name: 'Crediti', emoji: '💰' },
+            { id: 'legno', name: 'Legno', emoji: '<i class="ri-box-2-fill app-icon text-amber-600"></i>' },
+            { id: 'pietra', name: 'Pietra', emoji: '<i class="ri-box-2-fill app-icon text-slate-400"></i>' },
+            { id: 'oro', name: 'Oro', emoji: '<i class="ri-box-2-fill app-icon text-yellow-400"></i>' },
+            { id: 'cibo', name: 'Cibo', emoji: '🍗' },
+            { id: 'utensili', name: 'Utensili', emoji: '<i class="ri-tools-fill app-icon app-icon-utensils"></i>' },
+            { id: 'scienza', name: 'Scienza', emoji: '🧬' },
+            { id: 'frammenti', name: 'Frammenti', emoji: '🧩' },
+            { id: 'colori', name: 'Colori', emoji: '🎨' },
+            { id: 'jolly', name: 'Jolly', emoji: '🃏' }
+        ];
+
+        const ADVANCED_RESOURCE_KEYS = [
+            { id: 'fuoco', name: 'Fuoco', emoji: '<i class="ri-fire-fill app-icon app-icon-fire"></i>' },
+            { id: 'mattoni', name: 'Mattone', emoji: '<i class="ri-layout-grid-2-fill app-icon text-orange-500"></i>' },
+            { id: 'lavoratori', name: 'Lavoratore', emoji: '<i class="ri-user-6-fill app-icon text-cyan-400"></i>' },
+            { id: 'case', name: 'Casa', emoji: '<i class="ri-home-4-fill app-icon text-white"></i>' },
+            { id: 'foto_ricomposta', name: 'Foto Ricomposta', emoji: '<i class="ri-collage-fill app-icon app-icon-fuchsia"></i>' },
+            { id: 'set_fotografico', name: 'Set Fotografico', emoji: '<i class="ri-multi-image-fill app-icon app-icon-fuchsia"></i>' },
+            { id: 'album_fotografico', name: 'Album Fotografico', emoji: '<i class="ri-booklet-fill app-icon app-icon-fuchsia"></i>' },
+            { id: 'album_premium', name: 'Album Premium', emoji: '<i class="ri-booklet-fill app-icon app-icon-gold"></i>' }
+        ];
+
+        // Recipes Definition
+        const RECIPES_DATA = [
+            {
+                id: 'fuoco',
+                output: { id: 'fuoco', amount: 3, name: 'Fuoco', emoji: '<i class="ri-fire-fill app-icon app-icon-fire"></i>' },
+                inputs: [
+                    { id: 'legno', amount: 5, name: 'Legno', emoji: '<i class="ri-box-2-fill app-icon text-amber-600"></i>' },
+                    { id: 'utensili', amount: 1, name: 'Utensili', emoji: '<i class="ri-tools-fill app-icon app-icon-utensils"></i>' }
+                ]
+            },
+            {
+                id: 'lavoratore',
+                output: { id: 'lavoratori', amount: 1, name: 'Lavoratore', emoji: '<i class="ri-user-6-fill app-icon text-cyan-400"></i>' },
+                inputs: [
+                    { id: 'cibo', amount: 35, name: 'Cibo', emoji: '🍗' },
+                    { id: 'fuoco', amount: 1, name: 'Fuoco', emoji: '<i class="ri-fire-fill app-icon app-icon-fire"></i>' },
+                    { id: 'oro', amount: 1, name: 'Oro', emoji: '<i class="ri-box-2-fill app-icon text-yellow-400"></i>' }
+                ]
+            },
+            {
+                id: 'mattone',
+                output: { id: 'mattoni', amount: 1, name: 'Mattone', emoji: '<i class="ri-layout-grid-2-fill app-icon text-orange-500"></i>' },
+                inputs: [
+                    { id: 'pietra', amount: 5, name: 'Pietra', emoji: '<i class="ri-box-2-fill app-icon text-slate-400"></i>' },
+                    { id: 'utensili', amount: 1, name: 'Utensili', emoji: '<i class="ri-tools-fill app-icon app-icon-utensils"></i>' }
+                ]
+            },
+            {
+                id: 'casa',
+                output: { id: 'case', amount: 1, name: 'Casa', emoji: '<i class="ri-home-4-fill app-icon text-white"></i>' },
+                inputs: [
+                    { id: 'fuoco', amount: 50, name: 'Fuoco', emoji: '<i class="ri-fire-fill app-icon app-icon-fire"></i>' },
+                    { id: 'mattoni', amount: 10, name: 'Mattone', emoji: '<i class="ri-layout-grid-2-fill app-icon text-orange-500"></i>' },
+                    { id: 'lavoratori', amount: 3, name: 'Lavoratore', emoji: '<i class="ri-user-6-fill app-icon text-cyan-400"></i>' },
+                    { id: 'oro', amount: 15, name: 'Oro', emoji: '<i class="ri-box-2-fill app-icon text-yellow-400"></i>' },
+                    { id: 'utensili', amount: 20, name: 'Utensili', emoji: '<i class="ri-tools-fill app-icon app-icon-utensils"></i>' }
+                ]
+            },
+            {
+                id: 'foto_ricomposta',
+                output: { id: 'foto_ricomposta', amount: 1, name: 'Foto Ricomposta', emoji: '<i class="ri-collage-fill app-icon app-icon-fuchsia"></i>' },
+                inputs: [
+                    { id: 'frammenti', amount: 100, name: 'Frammenti', emoji: '🧩' },
+                    { id: 'utensili', amount: 5, name: 'Utensili', emoji: '<i class="ri-tools-fill app-icon app-icon-utensils"></i>' }
+                ]
+            },
+            {
+                id: 'set_fotografico',
+                output: { id: 'set_fotografico', amount: 1, name: 'Set Fotografico', emoji: '<i class="ri-multi-image-fill app-icon app-icon-fuchsia"></i>' },
+                inputs: [
+                    { id: 'foto_ricomposta', amount: 10, name: 'Foto Ricomposta', emoji: '<i class="ri-collage-fill app-icon app-icon-fuchsia"></i>' },
+                    { id: 'jolly', amount: 10, name: 'Jolly', emoji: '🃏' }
+                ]
+            },
+            {
+                id: 'album_fotografico',
+                output: { id: 'album_fotografico', amount: 1, name: 'Album Fotografico', emoji: '<i class="ri-booklet-fill app-icon app-icon-fuchsia"></i>' },
+                inputs: [
+                    { id: 'set_fotografico', amount: 5, name: 'Set Fotografico', emoji: '<i class="ri-multi-image-fill app-icon app-icon-fuchsia"></i>' },
+                    { id: 'utensili', amount: 10, name: 'Utensili', emoji: '<i class="ri-tools-fill app-icon app-icon-utensils"></i>' },
+                    { id: 'crediti', amount: 200, name: 'Crediti', emoji: '💰' },
+                    { id: 'scienza', amount: 200, name: 'Scienza', emoji: '🧬' },
+                    { id: 'colori', amount: 500, name: 'Colori', emoji: '🎨' },
+                    { id: 'jolly', amount: 5, name: 'Jolly', emoji: '🃏' }
+                ]
+            },
+            {
+                id: 'album_premium',
+                output: { id: 'album_premium', amount: 1, name: 'Album Fotografico Premium', emoji: '<i class="ri-booklet-fill app-icon app-icon-gold"></i>' },
+                inputs: [
+                    { id: 'lavoratori', amount: 30, name: 'Lavoratore', emoji: '<i class="ri-user-6-fill app-icon text-cyan-400"></i>' },
+                    { id: 'album_fotografico', amount: 5, name: 'Album Fotografico', emoji: '<i class="ri-booklet-fill app-icon app-icon-fuchsia"></i>' },
+                    { id: 'frammenti', amount: 3000, name: 'Frammenti', emoji: '🧩' },
+                    { id: 'oro', amount: 800, name: 'Oro', emoji: '<i class="ri-box-2-fill app-icon text-yellow-400"></i>' },
+                    { id: 'crediti', amount: 2000, name: 'Crediti', emoji: '💰' },
+                    { id: 'scienza', amount: 1000, name: 'Scienza', emoji: '🧬' },
+                    { id: 'colori', amount: 4000, name: 'Colori', emoji: '🎨' },
+                    { id: 'jolly', amount: 250, name: 'Jolly', emoji: '🃏' }
+                ],
+                maxCap: 1
+            }
+        ];
+
+        // Global State
+        let gameState = {
+            level: 1,
+            currentXP: 0,
+            totalTurns: 0,
+            totalRuns: 0,
+            
+            // Expedition active state
+            hearts: 3,
+            currentRound: 1,
+            isInExpedition: false,
+            
+            // Resources Inventory
+            resources: {
+                crediti: 0,
+                legno: 0,
+                pietra: 0,
+                oro: 0,
+                cibo: 0,
+                utensili: 0,
+                scienza: 0,
+                frammenti: 0,
+                colori: 0,
+                jolly: 0,
+                // Advanced
+                fuoco: 0,
+                mattoni: 0,
+                lavoratori: 0,
+                case: 0,
+                foto_ricomposta: 0,
+                set_fotografico: 0,
+                album_fotografico: 0,
+                album_premium: 0
+            }
+        };
+
+        let recipesIsOpen = true;
+
+        function toggleRecipesSection() {
+            recipesIsOpen = !recipesIsOpen;
+            const grid = document.getElementById('hubRecipesGrid');
+            const icon = document.getElementById('recipesToggleIcon');
+            if (grid) {
+                if (recipesIsOpen) {
+                    grid.classList.remove('hidden');
+                    if (icon) icon.textContent = '▼';
+                } else {
+                    grid.classList.add('hidden');
+                    if (icon) icon.textContent = '▲';
+                }
+            }
+        }
+
+        // Calculate max allowed workers (Base 3 + 1 per Casa)
+        function getMaxLavoratori() {
+            return 3 + (gameState.resources.case || 0);
+        }
+
+        // Calculate XP required for next level: Level 1 -> 10, Level 2 -> 11, Level 3 -> 12...
+        function getRequiredXP(level) {
+            return 10 + (level - 1);
+        }
+
+        function addXP(amount) {
+            gameState.currentXP += amount;
+            let reqXP = getRequiredXP(gameState.level);
+            
+            // Check level up (handles multiple levels if excess XP gained)
+            while (gameState.currentXP >= reqXP) {
+                gameState.currentXP -= reqXP;
+                gameState.level++;
+                reqXP = getRequiredXP(gameState.level);
+            }
+
+            updateXPUI();
+        }
+
+        function updateXPUI() {
+            const reqXP = getRequiredXP(gameState.level);
+            document.getElementById('playerLevelDisplay').textContent = gameState.level;
+            document.getElementById('currentXpText').textContent = gameState.currentXP;
+            document.getElementById('reqXpText').textContent = reqXP;
+
+            const percentage = Math.min(100, Math.max(0, (gameState.currentXP / reqXP) * 100));
+            document.getElementById('xpBarFill').style.width = `${percentage}%`;
+        }
+
+        function craftRecipe(recipeId) {
+            const recipe = RECIPES_DATA.find(r => r.id === recipeId);
+            if (!recipe) return;
+
+            // Workers cap check
+            if (recipeId === 'lavoratore') {
+                const currentWorkers = gameState.resources.lavoratori || 0;
+                if (currentWorkers >= getMaxLavoratori()) {
+                    return; // Cap reached
+                }
+            }
+
+            // Recipe max cap check (e.g. Unique 1/1 items)
+            if (recipe.maxCap) {
+                const currentOwned = gameState.resources[recipe.output.id] || 0;
+                if (currentOwned >= recipe.maxCap) {
+                    return; // Cap reached
+                }
+            }
+
+            // Check if player has enough resources
+            for (let input of recipe.inputs) {
+                if ((gameState.resources[input.id] || 0) < input.amount) {
+                    return; // Not enough resources
+                }
+            }
+
+            // Deduct inputs
+            for (let input of recipe.inputs) {
+                gameState.resources[input.id] -= input.amount;
+            }
+
+            // Add output
+            gameState.resources[recipe.output.id] = (gameState.resources[recipe.output.id] || 0) + recipe.output.amount;
+
+            // Re-render Hub UI
+            renderHubView();
+        }
+
+        function renderHubView() {
+            document.getElementById('totalTurnsDisplay').textContent = gameState.totalTurns;
+            document.getElementById('totalRunsDisplay').textContent = gameState.totalRuns;
+
+            // Render Base Resources Grid
+            const baseGrid = document.getElementById('hubResourceGrid');
+            baseGrid.innerHTML = '';
+
+            BASE_RESOURCE_KEYS.forEach(res => {
+                const count = gameState.resources[res.id] || 0;
+                const card = document.createElement('div');
+                card.className = "glass-panel p-2 rounded-lg border border-slate-800 flex items-center justify-between";
+                card.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">${res.emoji}</span>
+                        <div>
+                            <span class="block text-[10px] text-slate-400 font-medium leading-none">${res.name}</span>
+                            <span class="font-orbitron font-bold text-xs sm:text-sm text-white">${count}</span>
+                        </div>
+                    </div>
+                `;
+                baseGrid.appendChild(card);
+            });
+
+            // Render Advanced Resources Grid
+            const advGrid = document.getElementById('hubAdvancedResourceGrid');
+            advGrid.innerHTML = '';
+
+            const maxWorkers = getMaxLavoratori();
+
+            ADVANCED_RESOURCE_KEYS.forEach(res => {
+                const count = gameState.resources[res.id] || 0;
+                const card = document.createElement('div');
+                card.className = "glass-panel p-2 rounded-lg border border-amber-500/30 bg-amber-950/10 flex items-center justify-between";
+                
+                let capInfoText = '';
+                if (res.id === 'lavoratori') {
+                    capInfoText = `<span class="text-[9px] text-amber-300/80 block">(Max ${maxWorkers})</span>`;
+                } else if (res.id === 'album_premium') {
+                    capInfoText = `<span class="text-[9px] text-yellow-300/80 block">(Unico 1/1)</span>`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">${res.emoji}</span>
+                        <div>
+                            <span class="block text-[10px] text-amber-200/90 font-medium leading-none">${res.name} ${capInfoText}</span>
+                            <span class="font-orbitron font-bold text-xs sm:text-sm text-amber-100">${count}</span>
+                        </div>
+                    </div>
+                `;
+                advGrid.appendChild(card);
+            });
+
+            // Render Recipes Grid
+            const recipesGrid = document.getElementById('hubRecipesGrid');
+            recipesGrid.innerHTML = '';
+
+            RECIPES_DATA.forEach(recipe => {
+                const card = document.createElement('div');
+                card.className = "glass-panel p-3 rounded-xl border border-cyan-500/20 flex flex-col justify-between gap-2 bg-slate-900/60";
+
+                // Check affordability
+                let canAfford = true;
+                recipe.inputs.forEach(input => {
+                    if ((gameState.resources[input.id] || 0) < input.amount) {
+                        canAfford = false;
+                    }
+                });
+
+                // Worker cap check / Max cap check
+                let workerCapReached = false;
+                let maxCapReached = false;
+
+                if (recipe.id === 'lavoratore') {
+                    const currentWorkers = gameState.resources.lavoratori || 0;
+                    if (currentWorkers >= maxWorkers) {
+                        workerCapReached = true;
+                        canAfford = false;
+                    }
+                } else if (recipe.maxCap) {
+                    const currentAmount = gameState.resources[recipe.output.id] || 0;
+                    if (currentAmount >= recipe.maxCap) {
+                        maxCapReached = true;
+                        canAfford = false;
+                    }
+                }
+
+                // Render Inputs HTML badges
+                const inputsHTML = recipe.inputs.map(input => {
+                    const currentVal = gameState.resources[input.id] || 0;
+                    const hasEnough = currentVal >= input.amount;
+                    return `
+                        <span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md border ${hasEnough ? 'bg-slate-950/80 border-slate-700 text-slate-200' : 'bg-red-950/50 border-red-500/40 text-red-300'}">
+                            <span>${input.emoji}</span>
+                            <span class="font-bold">${input.amount}</span>
+                            <span class="text-[9px] opacity-70">(${currentVal})</span>
+                        </span>
+                    `;
+                }).join('');
+
+                // Button State text
+                let buttonLabel = `Crea +${recipe.output.amount} ${recipe.output.emoji}`;
+                if (workerCapReached) {
+                    buttonLabel = `Limite Raggiunto (${maxWorkers})`;
+                } else if (maxCapReached) {
+                    buttonLabel = `Oggetto Unico Già Creato (1/1)`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between gap-2 border-b border-slate-800 pb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">${recipe.output.emoji}</span>
+                            <div>
+                                <h4 class="font-orbitron font-bold text-xs text-white uppercase tracking-wider">
+                                    +${recipe.output.amount} ${recipe.output.name}
+                                </h4>
+                                ${recipe.id === 'lavoratore' ? `<p class="text-[9px] text-amber-400">Cap attuale: ${gameState.resources.lavoratori || 0}/${maxWorkers}</p>` : ''}
+                                ${recipe.id === 'casa' ? `<p class="text-[9px] text-amber-400">+1 Cap Lavoratore massimo</p>` : ''}
+                                ${recipe.maxCap ? `<p class="text-[9px] text-yellow-400">Oggetto unico (Max 1)</p>` : ''}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-1 my-1">
+                        ${inputsHTML}
+                    </div>
+
+                    <button 
+                        onclick="craftRecipe('${recipe.id}')"
+                        ${!canAfford ? 'disabled' : ''}
+                        class="w-full py-1.5 px-3 rounded-lg font-orbitron font-bold text-xs transition flex items-center justify-center gap-1.5 ${
+                            canAfford 
+                            ? 'bg-gradient-to-r from-cyan-500 to-teal-400 text-slate-950 shadow-md hover:brightness-110 active:scale-95 cursor-pointer' 
+                            : 'bg-slate-800 text-slate-500 border border-slate-700/50 cursor-not-allowed opacity-60'
+                        }">
+                        ${buttonLabel}
+                    </button>
+                `;
+
+                recipesGrid.appendChild(card);
+            });
+        }
+
+        function startExpedition() {
+            gameState.isInExpedition = true;
+            gameState.hearts = 3;
+            gameState.currentRound = 1;
+            gameState.totalRuns++;
+
+            document.getElementById('hubView').classList.add('hidden');
+            document.getElementById('expeditionView').classList.remove('hidden');
+
+            updateExpeditionUI();
+            generateNextChoices();
+        }
+
+        function updateExpeditionUI() {
+            document.getElementById('currentRoundDisplay').textContent = gameState.currentRound;
+
+            // Render hearts
+            const heartsContainer = document.getElementById('heartsContainer');
+            heartsContainer.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const heartSpan = document.createElement('span');
+                if (i < gameState.hearts) {
+                    heartSpan.className = 'animate-heart text-red-500 drop-shadow-[0_0_6px_rgba(239,68,68,0.6)]';
+                    heartSpan.textContent = '❤️';
+                } else {
+                    heartSpan.className = 'text-slate-700 opacity-40';
+                    heartSpan.textContent = '🖤';
+                }
+                heartsContainer.appendChild(heartSpan);
+            }
+        }
+
+        // Procedural Choice Templates Generator (Only grants Base 10 Resources)
+        const CHOICE_POOL = [
+            {
+                title: "Rovine",
+                res: [{ key: 'scienza', min: 1, max: 3 }, { key: 'frammenti', min: 1, max: 2 }],
+                riskChance: 0.15
+            },
+            {
+                title: "Foresta",
+                res: [{ key: 'legno', min: 2, max: 5 }, { key: 'cibo', min: 1, max: 2 }],
+                riskChance: 0.0
+            },
+            {
+                title: "Miniera",
+                res: [{ key: 'pietra', min: 3, max: 6 }, { key: 'oro', min: 1, max: 2 }],
+                riskChance: 0.35
+            },
+            {
+                title: "Mercato",
+                res: [{ key: 'crediti', min: 3, max: 7 }, { key: 'utensili', min: 1, max: 2 }],
+                riskChance: 0.0
+            },
+            {
+                title: "Alchimia",
+                res: [{ key: 'colori', min: 2, max: 4 }, { key: 'jolly', min: 1, max: 1 }],
+                riskChance: 0.40
+            },
+            {
+                title: "Caccia",
+                res: [{ key: 'cibo', min: 3, max: 5 }, { key: 'crediti', min: 1, max: 3 }],
+                riskChance: 0.30
+            },
+            {
+                title: "Anomalia",
+                res: [{ key: 'jolly', min: 1, max: 2 }, { key: 'frammenti', min: 2, max: 3 }],
+                riskChance: 0.50
+            },
+            {
+                title: "Fucina",
+                res: [{ key: 'utensili', min: 2, max: 4 }, { key: 'pietra', min: 1, max: 3 }],
+                riskChance: 0.10
+            },
+            {
+                title: "Fiume",
+                res: [{ key: 'oro', min: 2, max: 4 }, { key: 'crediti', min: 2, max: 4 }],
+                riskChance: 0.05
+            },
+            {
+                title: "Botanica",
+                res: [{ key: 'colori', min: 2, max: 5 }, { key: 'scienza', min: 1, max: 2 }],
+                riskChance: 0.0
+            }
+        ];
+
+        function generateNextChoices() {
+            const container = document.getElementById('choicesContainer');
+            container.innerHTML = '';
+
+            // Pick 3 random choices from pool
+            const shuffled = [...CHOICE_POOL].sort(() => 0.5 - Math.random());
+            const selectedChoices = shuffled.slice(0, 3);
+
+            selectedChoices.forEach((template, index) => {
+                // Determine actual resource amounts
+                const rewards = template.res.map(r => {
+                    const amount = Math.floor(Math.random() * (r.max - r.min + 1)) + r.min;
+                    return { key: r.key, amount: amount };
+                });
+
+                // Determine if this specific choice damages the player
+                const causesHeartLoss = Math.random() < template.riskChance;
+                const heartLoss = causesHeartLoss ? 1 : 0;
+
+                const choiceData = {
+                    title: template.title,
+                    rewards: rewards,
+                    heartLoss: heartLoss
+                };
+
+                // Create Compact Metallic Cyan Tile HTML
+                const tile = document.createElement('div');
+                tile.className = "metallic-cyan-tile p-3 sm:p-4 rounded-xl cursor-pointer flex flex-col justify-between h-[31%] min-h-0 select-none";
+                
+                // Construct Resource Badges HTML (Enphasized & Centered)
+                const rewardsHTML = rewards.map(r => {
+                    const resObj = BASE_RESOURCE_KEYS.find(k => k.id === r.key);
+                    return `
+                        <div class="inline-flex items-center gap-2 bg-slate-950/90 border border-cyan-400/50 px-3.5 py-1.5 sm:py-2 rounded-xl text-base sm:text-lg font-black text-white shadow-lg shadow-cyan-950/60 transition-transform active:scale-105">
+                            <span class="text-xl sm:text-2xl drop-shadow">${resObj.emoji}</span>
+                            <span class="text-cyan-300 font-orbitron text-base sm:text-xl font-extrabold">+${r.amount}</span>
+                        </div>
+                    `;
+                }).join('');
+
+                // Heart risk badge (Shown ONLY when heartLoss > 0)
+                let dangerHTML = '';
+                if (heartLoss > 0) {
+                    dangerHTML = `
+                        <span class="inline-flex items-center gap-1 bg-red-950/90 border border-red-500/60 px-2.5 py-1 rounded-md text-[11px] sm:text-xs font-bold text-red-300 animate-pulse shrink-0">
+                            Danno -1 ❤️
+                        </span>
+                    `;
+                }
+
+                tile.innerHTML = `
+                    <div class="flex items-center justify-between gap-2 shrink-0">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-cyan-950/90 border border-cyan-400/40 flex items-center justify-center font-orbitron font-black text-cyan-300 text-xs sm:text-sm shrink-0 shadow-md">
+                                ${index + 1}
+                            </div>
+                            <h4 class="font-orbitron font-extrabold text-base sm:text-xl text-white uppercase tracking-wider truncate">
+                                ${choiceData.title}
+                            </h4>
+                        </div>
+                        ${dangerHTML}
+                    </div>
+
+                    <div class="flex-1 flex items-center justify-center gap-2.5 sm:gap-4 my-auto w-full flex-wrap py-1">
+                        ${rewardsHTML}
+                    </div>
+                `;
+
+                tile.onclick = () => handleChoiceSelection(choiceData);
+                container.appendChild(tile);
+            });
+        }
+
+        function handleChoiceSelection(choice) {
+            // 1. Turn counter always increases
+            gameState.totalTurns++;
+
+            // 2. Add 1 XP for ANY choice made
+            addXP(1);
+
+            // 3. Collect/Add resources
+            choice.rewards.forEach(r => {
+                gameState.resources[r.key] = (gameState.resources[r.key] || 0) + r.amount;
+            });
+
+            // 4. Apply heart loss if implied
+            if (choice.heartLoss > 0) {
+                gameState.hearts -= choice.heartLoss;
+            }
+
+            // 5. Check if hearts reach 0
+            if (gameState.hearts <= 0) {
+                gameState.hearts = 0;
+                updateExpeditionUI();
+                returnToHub();
+                return;
+            }
+
+            // 6. Advance to next round if still alive
+            gameState.currentRound++;
+            updateExpeditionUI();
+            generateNextChoices();
+        }
+
+        function returnToHub() {
+            gameState.isInExpedition = false;
+            document.getElementById('expeditionView').classList.add('hidden');
+            document.getElementById('hubView').classList.remove('hidden');
+            renderHubView();
+        }
+
+        function forfeitRun() {
+            returnToHub();
+        }
+
+        function openSaveModal() {
+            document.getElementById('saveModal').classList.remove('hidden');
+            document.getElementById('saveModalStatus').textContent = '';
+            document.getElementById('generatedCodeContainer').classList.add('hidden');
+            document.getElementById('saveCodeOutput').value = '';
+            document.getElementById('loadCodeInput').value = '';
+        }
+
+        function closeSaveModal() {
+            document.getElementById('saveModal').classList.add('hidden');
+        }
+
+        function generateSaveCode() {
+            const saveData = {
+                level: gameState.level,
+                currentXP: gameState.currentXP,
+                totalTurns: gameState.totalTurns,
+                totalRuns: gameState.totalRuns,
+                resources: gameState.resources
+            };
+            try {
+                const jsonStr = JSON.stringify(saveData);
+                const encoded = btoa(unescape(encodeURIComponent(jsonStr)));
+                document.getElementById('saveCodeOutput').value = encoded;
+                document.getElementById('generatedCodeContainer').classList.remove('hidden');
+                showSaveStatus("Codice generato con successo!", "text-emerald-400");
+            } catch(e) {
+                showSaveStatus("Errore durante la generazione.", "text-red-400");
+            }
+        }
+
+        function copySaveCode() {
+            const copyText = document.getElementById('saveCodeOutput');
+            if (!copyText.value) return;
+            copyText.select();
+            try {
+                document.execCommand('copy');
+                showSaveStatus("Codice copiato negli appunti!", "text-emerald-400");
+            } catch(err) {
+                showSaveStatus("Seleziona e copia manualmente.", "text-amber-400");
+            }
+        }
+
+        function loadSaveCode() {
+            const code = document.getElementById('loadCodeInput').value.trim();
+            if (!code) {
+                showSaveStatus("Inserisci un codice valido!", "text-red-400");
+                return;
+            }
+            try {
+                const jsonStr = decodeURIComponent(escape(atob(code)));
+                const data = JSON.parse(jsonStr);
+                
+                if (data && typeof data.level === 'number' && data.resources) {
+                    gameState.level = Number(data.level) || 1;
+                    gameState.currentXP = Number(data.currentXP) || 0;
+                    gameState.totalTurns = Number(data.totalTurns) || 0;
+                    gameState.totalRuns = Number(data.totalRuns) || 0;
+                    
+                    Object.keys(gameState.resources).forEach(key => {
+                        gameState.resources[key] = Number(data.resources[key]) || 0;
+                    });
+
+                    updateXPUI();
+                    renderHubView();
+                    showSaveStatus("Progressi caricati con successo!", "text-emerald-400");
+                    setTimeout(() => {
+                        closeSaveModal();
+                    }, 1200);
+                } else {
+                    throw new Error("Formato non valido");
+                }
+            } catch(e) {
+                showSaveStatus("Codice di salvataggio non valido!", "text-red-400");
+            }
+        }
+
+        function showSaveStatus(msg, colorClass) {
+            const statusEl = document.getElementById('saveModalStatus');
+            statusEl.className = `text-xs text-center font-semibold h-4 ${colorClass}`;
+            statusEl.textContent = msg;
+        }
+
+        // Initialize App on Load
+        window.onload = function() {
+            updateXPUI();
+            renderHubView();
+        };
+    </script>
+</body>
+</html>
