@@ -4,6 +4,7 @@ An incremental choice-based resource management and expedition web app built wit
 
 [🇮🇹 Leggi in Italiano](#-versione-italiana)
 
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC_BY--NC_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 ---
 
 ## 🇬🇧 English Version
