@@ -39,9 +39,20 @@ Simply open `index.html` in any modern web browser or host it via GitHub Pages.
 
 ---
 
-## 📜 License / Licenza
+## 📜 License
 
 This project is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.
 
-* **Free to use & modify:** You can play, customize, and share the code freely for personal use.
+* **Attribution Required:** You **must** give appropriate credit to the original author, provide a link to the license, and indicate if changes were made.
+* **Free to Use & Modify:** You can play, customize, and share the code freely for personal, non-commercial use.
 * **Non-Commercial:** Commercial use, monetisation, or resale of this code or its derivatives is strictly prohibited.
+
+---
+
+## 📜 Licenza
+
+Questo progetto è distribuito sotto licenza **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.
+
+* **Obbligo di Citazione:** È **obbligatorio** citare l'autore originale, inserire un link alla licenza e indicare le eventuali modifiche apportate.
+* **Uso e Modifica Gratuita:** Puoi giocare, personalizzare e condividere il codice liberamente per uso personale e non commerciale.
+* **Divieto di Monetizzazione:** La vendita, la monetizzazione o qualsiasi utilizzo commerciale di questo codice e dei suoi derivati sono severamente vietati.
