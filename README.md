@@ -2,10 +2,11 @@
 
 [🇮🇹 Leggi in Italiano](#-versione-italiana)
 
-[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC_BY--NC_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 ---
 
 ## 🇬🇧 English Version
+
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ### 🎮 Overview
 **Tiles Journey** is a lightweight, mobile-optimized strategy game. Players manage resources, level up infinitely, and embark on expeditions where every tile chosen yields materials or presents dangers. Craft advanced components in the Hub to unlock unique items!
@@ -24,6 +25,8 @@ Simply open `index.html` in any modern web browser or host it via GitHub Pages.
 ---
 
 ## 🇮🇹 Versione Italiana
+
+[![Licenza](https://img.shields.io/badge/Licenza-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ### 🎮 Descrizione
 **Tiles Journey** è un gioco strategico incrementale e di gestione risorse ottimizzato per dispositivi mobili. Gestisci le risorse, sali di livello senza limiti e parti per spedizioni dove ogni scelta fornisce materiali o nasconde insidie. Crea risorse avanzate nell'Hub per sbloccare oggetti unici!
